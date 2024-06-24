@@ -103,10 +103,12 @@ curl -sSL https://download.thehubble.xyz/bootstrap.sh | bash
 
 ![image](https://github.com/HerculesNode/Testnet-Rehber/assets/101635385/24432e01-c9c7-4a8c-b983-cf373f380082)
 
-
+## 🟢 False'a döndü mü diye kontrol etmek için (Log kontrolü)
+```shell
+curl http://127.0.0.1:2281/v1/info?dbstats=1 | jq
+```
 
 ## 🟢 Sonuç izleme
-
 
 - Aşağıdaki gibi çıktı almalısınız. Öncelikle Snap yükleyecek biraz uzun sürüyor ondan sonra resimdeki gibi bir ekran gelecek.
 - Aşağıdaki kod ile FID doğrumu kontrol edebilirsiniz. 
