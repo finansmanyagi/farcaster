@@ -6,7 +6,9 @@ sudo apt update -y
 ```shell
 cd hubble
 ```
+```shell
 ./hubble.sh down
+```
 ```shell
 nano .env
 ```
