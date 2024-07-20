@@ -2,9 +2,9 @@
 ```shell
 sudo apt update -y
 ```
-cd hubble
-```shell
 
+```shell
+cd hubble
 ```
 ./hubble.sh down
 ```shell
