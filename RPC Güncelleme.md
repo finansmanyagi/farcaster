@@ -12,7 +12,7 @@ cd hubble
 ```shell
 nano .env
 ```
-Daha sonra eski alchemyden aldığımız RPC'leri silip, infuradan yeni aldığımız RPC'ler ile deüiştiriyoruz.
+Daha sonra eski alchemyden aldığımız RPC'leri silip, infuradan yeni aldığımız RPC'ler ile değiştiriyoruz.
 ```shell
 ./hubble.sh up
 ```
