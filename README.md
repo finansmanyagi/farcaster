@@ -1,158 +1,181 @@
-### Fractal Bitcoin Node Kurulumu
- Merhabalar, bugün sizlerle birlikte Binance tarafından desteklenen ve 9 Eylül 2024 tarihinde kendi ağında mainnete geçen ve
- bu ay coinin çıkması beklenen Fractal Bitcoin için node kurulumu gerçekleştireceğiz.
+### Farcaster Node Hubble
+ * Resmi döküman : https://docs.farcaster.xyz/hubble/hubble - https://www.thehubble.xyz/intro/hubble.html
+   
+## 🟢 Ön Bilgilendirme
+- Bu işlem ile Farcaster üzerinde bir Node çalıştırabilirsiniz. 
+- Bunu yapabilmek için Warpcast hesabınızın olması gerekiyor yoksa buradan üye olun 5$ maliyeti var
+- https://warpcast.com/~/invite-page/290828?id=b3af94ef
 
- # Node için herhangi bir teşvik söz konusu değil. Mining için bu node'un çalışıtırılmasına ihtiyaç vardır.
 
- ## Peki Nedir Bu Fractal Bitcoin ?
-Fractal Bitcoin, sonsuz katmanları yinelemeli olarak ölçeklendirmek için Bitcoin Core kodunu kullanan tek Bitcoin ölçeklendirme çözümüdür. Bu, Bitcoin'e uygulanan dünyadaki ilk sanallaştırma yöntemidir. Fractal, Bitcoin blok zincirini, Bitcoin ana zincirindeki tutarlılığı bozmadan ölçeklenebilir bir bilgi işlem sistemine kademeli olarak genişletir. Güçlü araçlar ve destek ile Fractal üzerine inşa etmek oldukça basittir.
-**[Eğer flood hakkında okumak isterseinz X'ten takip etmeyi unutmayınız.](https://x.com/finans_manyagi)**
+## 🟢 özellik
+- 16GB Ram istiyor. Fakat gözlemlediğime göre 16GB ram kullanmıyor daha az olabilir. Kurulumda 16GB istiyor 
+- 4CPU
+- 200 GB+
+- Port 2281 - 2283 - Grafana için : 3000
 
-## Kurulum
 
-1. **Paketleri Kurun:**
 
+
+## 🟢 Güncellemeler
 ```shell
-sudo apt update && sudo apt upgrade -y
-sudo apt install curl build-essential pkg-config libssl-dev git wget jq make gcc chrony -y
-```
-
-## Node Kurulumu
-
-1. **Fractal Reposunu Çekme:**
-
-```shell
-wget https://github.com/fractal-bitcoin/fractald-release/releases/download/v0.2.1/fractald-0.2.1-x86_64-linux-gnu.tar.gz
-```
-
-2. **Dosyayı Çıkarma:**
-
-```shell
-tar -zxvf fractald-0.2.1-x86_64-linux-gnu.tar.gz
-```
-
-3. **Data Klasörünü Oluşturma:**
-
-```shell
-cd fractald-0.2.1-x86_64-linux-gnu && mkdir data
-```
-
-4. **Konfigürasyon Dosyasını Kopyalama:**
-
-```shell
-cp ./bitcoin.conf ./data
-```
-
-5. **Bitcoin Daemon'u Çalıştıralım**
-
-```shell
-./bin/bitcoind -datadir=./data/ -maxtipage=504576000
-```
-
-**Docker Kullanarak işlemlerimizi yapalım**
-
-1. **Repoyu klonlayalım**
-
-```shell
-git clone https://github.com/fractal-bitcoin/fractald-release.git
-```
-
-2. **Docker dizinine gidelim**
-
-```shell
-cd fractald-docker
-```
-
-3. **Servisi Docker Compose ile başlatalım**
-
-```shell
-docker-compose up -d
-```
-
-3. **Servis Oluşturma (Eğer docker compose ile başlatmada hata alıyorsanız buradaki işlemleri yapınız, ama eğer hata almıyorsanız servis oluşturma kısmını atlayıp log kontrolüne geçebilirsiniz.):**
-
-```shell
-sudo tee /etc/systemd/system/fractald.service > /dev/null <<EOF
-[Unit]
-Description=Fractal Bitcoin Node
-After=network.target
-
-[Service]
-User=root
-WorkingDirectory=/root/fractald-0.2.1-x86_64-linux-gnu
-ExecStart=/root/fractald-0.2.1-x86_64-linux-gnu/bin/bitcoind -datadir=/root/fractald-0.2.1-x86_64-linux-gnu/data/ -maxtipage=504576000
-Restart=always
-RestartSec=3
-LimitNOFILE=infinity
-
-[Install]
-WantedBy=multi-user.target
-EOF
+sudo apt update -y
 ```
 
 ```shell
-sudo systemctl daemon-reload && \
-sudo systemctl enable fractald && \
-sudo systemctl start fractald
+sudo apt upgrade -y
 ```
-
-**Log Kontrol**
-
-```bash
-sudo journalctl -u fractald -fo cat
-```
-
-### 7. Cüzdan Oluşturma
-
-Aşağıdaki komutları sırasıyla çalıştırarak cüzdan oluşturun:
 
 ```shell
-cd /root/fractald-0.2.1-x86_64-linux-gnu/bin
-./bitcoin-wallet -wallet=wallet -legacy create
+sudo apt install screen -y
 ```
-Bu adımlar sonucunda, ismi `wallet` olan yeni bir cüzdan oluşturmuş olacaksınız.
 
-![Ekran Resmi 2024-07-25 23 40 11](https://github.com/user-attachments/assets/347d7ae9-5de4-42de-a0cc-9c7b7edef409)
-
-8. **Cüzdan Private Key Alma:**
-> Aşağıdaki komutla private keyinizi öğrenebilirsiniz. Komutta herhangi bir yeri değiştirmenize gerek yok.
 ```shell
-cd /root/fractald-0.2.1-x86_64-linux-gnu/bin
-./bitcoin-wallet -wallet=/root/.bitcoin/wallets/wallet/wallet.dat -dumpfile=/root/.bitcoin/wallets/wallet/MyPK.dat dump
-cd && awk -F 'checksum,' '/checksum/ {print "Cüzdan Private Keyiniz:" $2}' .bitcoin/wallets/wallet/MyPK.dat
+screen -S warp
 ```
 
-### Node Silme
+
+
+## 🟢 Docker indirelim	
+
+- Docker kurulu ise önce `docker --version` komutuyla versiyon kontrolü yapın. Resimdeki gibiyse kurmanıza gerek yok. Değilse aşağıdaki komutlar ile kurun
+
+![image](https://github.com/HerculesNode/Testnet-Rehber/assets/101635385/f7f9d70c-422b-4839-a8ad-e0daa12f4977)
+
+
+
 ```shell
-curl -s https://raw.githubusercontent.com/blackowltr/Fractal-Rehber/main/delete.sh | bash
+sudo apt-get update
+sudo apt-get install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
 ```
----------
+```shell
+sudo mkdir -p /etc/apt/keyrings
+```
 
-# Unisat Wallet'a Cüzdan Import Etme
+```shell
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+```
 
-1. **Unisat Wallet'ı [İndirin](https://chromewebstore.google.com/detail/unisat-wallet/ppbibelpcjmhbdihakflkdcoccbgbkpo?pli=1)**
-   - Cüzdanı açın.
+```shell
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+```
 
-![1  (4)](https://github.com/user-attachments/assets/a5cb92dc-417b-4868-bcbb-68e24e3dd354)
+```shell
+sudo apt-get update
+```
 
-2. **Ayarlar Menüsüne Girin**
-   - Ekranın sol üst köşesindeki wallet #1'e tıklayın ve ardından sağ üst köşedeki "+" simgesine tıklayın.
+```shell
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
 
-![1](https://github.com/user-attachments/assets/116dedbd-a1f8-44cf-b7dd-828d6efe4207)
+```shell
+sudo systemctl start docker
+sudo systemctl enable docker
+```
 
-4. **Private Key ile Geri Yükleme**
-   - "Single private key geri yükle" seçeneğini seçin.
+```shell
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+```
 
-![1  (1)](https://github.com/user-attachments/assets/ada6a10e-0c6b-4007-8acf-18376100e426)
+```shell
+sudo chmod +x /usr/local/bin/docker-compose
+```
 
-5. **Private Key’i Yapıştırın**
-   - Size verilen private key’i ilgili alana yapıştırın.
 
-![1  (2)](https://github.com/user-attachments/assets/1e61209c-1128-4bd6-a87e-f8ed96924fc6)
+## 🟢 Tek kod kurulum çalıştıralım
 
-8. **Cüzdan Türünü Seçin**
-   - Cüzdan türü olarak "Legacy" seçeneğini işaretleyin.
+```shell
+curl -sSL https://download.thehubble.xyz/bootstrap.sh | bash
+```
 
-![1  (3)](https://github.com/user-attachments/assets/09497321-4475-4831-8ff6-d786d0fe295d)
+- Burada sizden ETH , OP mainnet ağında RPC isteyecek.  
+- Alabileceğiniz yerler :  https://app.infura.io/dashboard ve https://www.alchemy.com/  buradan temin edebilirsiniz. 
 
-* Fractal Explorer: [https://explorer.fractalbitcoin.io/](https://explorer.fractalbitcoin.io/)
+#### 1-ETH mainnet RPC linkini girin
+#### 2-Op Mainnet RPC linkini girin
+#### 3-Warpcast FID numaranızı girin Profiliniz sağ üstten 3 çizgi ve About butonuna basın çıkıyor.
+
+![image](https://github.com/HerculesNode/Testnet-Rehber/assets/101635385/24432e01-c9c7-4a8c-b983-cf373f380082)
+
+## 🟢 False'a döndü mü diye kontrol etmek için (Log kontrolü)
+```shell
+curl http://127.0.0.1:2281/v1/info?dbstats=1 | jq
+```
+
+## 🟢 Sonuç izleme
+
+- Aşağıdaki gibi çıktı almalısınız. Öncelikle Snap yükleyecek biraz uzun sürüyor ondan sonra resimdeki gibi bir ekran gelecek.
+- Aşağıdaki kod ile FID doğrumu kontrol edebilirsiniz. 
+
+```shell
+docker logs hubble-hubble-1 2>&1 | grep "Hub Operator FID"
+```
+
+![image](https://github.com/HerculesNode/Testnet-Rehber/assets/101635385/d0a4598e-b3a4-4ee3-a22b-5319f85c5c4f)
+
+
+![image](https://github.com/HerculesNode/Testnet-Rehber/assets/101635385/80611013-b51f-4c52-9fed-1284357d430f)
+
+
+- Ayrıca grafana ile kontrol edebilirsiniz.  http://SUNUCU-IP:3000 şeklinde
+
+![image](https://github.com/HerculesNode/Testnet-Rehber/assets/101635385/1496c07d-c8b2-44ec-86ae-6b5fcada0526)
+
+
+## 🟢 Sağlıklı bir kurulumda aşağıdaki gibi dosyalar olması gerekiyor. 
+
+![image](https://github.com/HerculesNode/Testnet-Rehber/assets/101635385/cec5a452-e898-4801-a370-c39ea0bc96b1)
+
+
+
+## 🟢 Yükseltme işlemi ( upgrade ) Bunu otomatik yapıyor. Manuel kullanmak isterseniz 
+
+```shell
+cd ~/hubble && ./hubble.sh upgrade
+```
+
+
+## 🟢 Yararlı komutlar
+
+```shell
+cd ~/hubble 
+```
+
+- Loglara bakma
+
+```shell
+./hubble.sh logs
+```
+
+- Durdurma 
+```shell
+./hubble.sh down
+```
+
+- Yeniden başlatma
+
+```shell
+./hubble.sh up
+```
+
+- veritabanı sıfırlama
+
+```shell
+rm -rf .rocks
+```
+
+- FID isminize bakma
+
+```shell
+docker logs hubble-hubble-1 2>&1 | grep "Hub Operator FID"
+```
+
+
+#### Senktonize oldummu ? Bunun için grafana panelinize bakın aşağıdaki resimdeki gibi ise sorun yok %100 gösteriyorsa senkronize oldu demektir. değilse yeniden başlatın
+
+![image](https://github.com/HerculesNode/Testnet-Rehber/assets/101635385/dd393a7a-135a-4d2f-95be-f36ec884eb15)
